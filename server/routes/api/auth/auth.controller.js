@@ -25,10 +25,10 @@ exports.register = async (req, res) => {
     });
 
   bcrypt.genSalt(10, (error, salt) => {
-    if (error) return res.status(500).json({ registerSuccess: false, error });
+    if (error) return res.json({ registerSuccess: false, error });
 
     bcrypt.hash(password, salt, async (error, hash) => {
-      if (error) return res.status(500).json({ registerSuccess: false, error });
+      if (error) return res.json({ registerSuccess: false, error });
 
       password = hash;
 
@@ -38,8 +38,7 @@ exports.register = async (req, res) => {
       });
 
       user.save((error) => {
-        if (error)
-          return res.status(500).json({ registerSuccess: false, error });
+        if (error) return res.json({ registerSuccess: false, error });
 
         res
           .status(201)
@@ -56,19 +55,21 @@ exports.login = (req, res) => {
   const { email, password } = req.body;
 
   User.findOne({ email }, (error, user) => {
-    if (error) return res.status(500).json({ loginSuccess: false, error });
+    if (error) return res.json({ loginSuccess: false, error });
     if (!user)
-      return res
-        .status(403)
-        .json({ loginSuccess: false, message: "해당하는 이메일이 없습니다." });
+      return res.json({
+        loginSuccess: false,
+        message: "해당하는 이메일이 없습니다.",
+      });
 
     if (user) {
       user.comparePassword(password, (error, match) => {
-        if (error) return res.status(500).json({ loginSuccess: false, error });
+        if (error) return res.json({ loginSuccess: false, error });
         if (!match)
-          return res
-            .status(403)
-            .json({ loginSuccess: false, message: "비밀번호가 틀렸습니다." });
+          return res.json({
+            loginSuccess: false,
+            message: "비밀번호가 틀렸습니다.",
+          });
         else {
           const token = jwt.sign({ userID: user._id }, process.env.TOKEN_KEY, {
             expiresIn: "1m",
@@ -76,8 +77,7 @@ exports.login = (req, res) => {
 
           user.token = token;
           user.save((error, user) => {
-            if (error)
-              return res.status(500).json({ loginSuccess: false, error });
+            if (error) return res.json({ loginSuccess: false, error });
             return res
               .cookie("x_auth", user.token, {
                 maxAge: 1000 * 60,
@@ -106,11 +106,11 @@ exports.jwtVerifyMiddleware = (req, res, next) => {
   let token = req.cookies.x_auth;
 
   jwt.verify(token, process.env.TOKEN_KEY, (error, decoded) => {
-    if (error) return res.status(500).json({ isAuth: false, error });
+    if (error) return res.json({ isAuth: false, error });
 
     User.findOne({ _id: decoded.userID }, (error, user) => {
-      if (error) return res.status(500).json({ isAuth: false, error });
-      if (!user) return res.status(404).json({ isAuth: false });
+      if (error) return res.json({ isAuth: false, error });
+      if (!user) return res.json({ isAuth: false });
 
       if (user) {
         req.token = token;
