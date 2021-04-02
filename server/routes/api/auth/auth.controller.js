@@ -14,14 +14,14 @@ exports.register = async (req, res) => {
   if (password !== confirmPassword)
     return res.json({
       registerSuccess: false,
-      message: "비밀번호가 다릅니다.",
+      message: "비밀번호가 틀렸습니다.",
     });
 
   const existUser = await User.findOne({ email });
   if (existUser)
     return res.json({
       registerSuccess: false,
-      message: "이미 가입된 유저입니다.",
+      message: "이미 가입된 이메일입니다.",
     });
 
   bcrypt.genSalt(10, (error, salt) => {
@@ -42,7 +42,7 @@ exports.register = async (req, res) => {
 
         res
           .status(201)
-          .json({ registerSuccess: true, message: "가입이 완료되었습니다" });
+          .json({ registerSuccess: true, message: "가입이 완료되었습니다." });
       });
     });
   });
