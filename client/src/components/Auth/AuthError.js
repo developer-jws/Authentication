@@ -7,7 +7,7 @@ const Wrapper = styled.div`
   justify-content: center;
   font-weight: 400;
   color: #ff0000;
-  font-size: 1.05rem;
+  font-size: 0.8rem;
 `;
 
 function AuthError({ children = "" }) {

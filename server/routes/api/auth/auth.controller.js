@@ -3,6 +3,20 @@ const bcrypt = require("bcryptjs");
 const User = require("../../../models/user");
 
 /*
+  GET /api/auth/exists/:key(email)/:value
+*/
+exports.exists = async (req, res) => {
+  const { key, value } = req.params;
+  // console.log(key, value);
+  if (!value) return res.json({ exists: false });
+
+  const exist = await User.findByEmail(value);
+
+  if (exist) return res.json({ exists: false });
+  return res.json({ exists: true });
+};
+
+/*
   POST /api/auth/register
 */
 exports.register = async (req, res) => {

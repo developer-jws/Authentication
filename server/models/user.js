@@ -13,6 +13,9 @@ userSchema.methods.comparePassword = function (pw, cb) {
     cb(null, match);
   });
 };
+userSchema.statics.findByEmail = function (email) {
+  return this.findOne({ email }).exec();
+};
 
 const User = mongoose.model("user", userSchema);
 
