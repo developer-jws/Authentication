@@ -8,8 +8,9 @@ import {
 } from "components/Auth";
 import { useDispatch, useSelector } from "react-redux";
 import { changeInput, initializeForm } from "redux/modules/form";
+import { login } from "redux/modules/auth";
 
-function Login() {
+function Login({ history }) {
   const { email, password } = useSelector((state) => ({
     email: state.form.login.form.email,
     password: state.form.login.form.password,
@@ -25,6 +26,11 @@ function Login() {
     const { name, value } = e.target;
     dispatch(changeInput({ form: "login", name, value }));
   };
+
+  const onSubmit = (e) => {
+    dispatch(login({ email, password, history }));
+  };
+
   return (
     <AuthWrapper>
       <AuthContent title="로그인">
@@ -43,7 +49,7 @@ function Login() {
           value={password}
           onChange={handleChange}
         />
-        <AuthButton>로그인</AuthButton>
+        <AuthButton onClick={onSubmit}>로그인</AuthButton>
         <CenterAlignedLink to="/auth/register">회원가입</CenterAlignedLink>
       </AuthContent>
     </AuthWrapper>

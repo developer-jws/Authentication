@@ -110,7 +110,7 @@ exports.login = (req, res) => {
   POST api/auth/logout
 */
 exports.logout = (req, res) => {
-  return res.cookie("x_auth", "").json({ logoutSuccess: true });
+  return res.clearCookie("x_auth").json({ logoutSuccess: true });
 };
 
 /*

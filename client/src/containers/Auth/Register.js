@@ -1,3 +1,4 @@
+import { registerRequest } from "api/authAPI";
 import {
   AuthButton,
   AuthContent,
@@ -15,7 +16,7 @@ import {
   initializeForm,
 } from "redux/modules/form";
 
-function Register() {
+function Register({ history }) {
   const { email, password, confirmPassword, exists } = useSelector((state) => ({
     email: state.form.register.form.email,
     password: state.form.register.form.password,
@@ -40,6 +41,25 @@ function Register() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     dispatch(changeInput({ form: "register", name, value }));
+  };
+
+  const onSubmit = async (e) => {
+    try {
+      if (!exists.email || !exists.password) {
+        alert("정보를 확인해 주세요.");
+        return;
+      }
+      const data = await registerRequest({ email, password, confirmPassword });
+      console.log(data);
+      if (data.registerSuccess) {
+        alert("가입이 완료되었습니다.");
+        history.push("/auth/login");
+      } else {
+        alert("오류가 발생했습니다.");
+      }
+    } catch (error) {
+      alert("오류가 발생했습니다.");
+    }
   };
 
   return (
@@ -71,7 +91,7 @@ function Register() {
           onChange={handleChange}
           onBlur={passwordOnBlur}
         />
-        <AuthButton>회원가입</AuthButton>
+        <AuthButton onClick={onSubmit}>회원가입</AuthButton>
         <AuthError>
           {exists.emailMessage || exists.passwordMessage || ""}
         </AuthError>

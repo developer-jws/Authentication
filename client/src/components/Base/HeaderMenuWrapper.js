@@ -4,6 +4,7 @@ import styled from "styled-components";
 const Wrapper = styled.div`
   width: 200px;
   display: flex;
+  justify-content: flex-end;
   flex-direction: row;
 `;
 function HeaderMenuWrapper({ children }) {

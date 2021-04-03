@@ -6,6 +6,7 @@ import createSagaMiddleware from "redux-saga";
 import rootReducer from "./modules";
 import { all } from "redux-saga/effects";
 import { formSaga } from "./modules/form";
+import { authSaga } from "./modules/auth";
 
 const persistConfig = {
   key: "root",
@@ -13,7 +14,7 @@ const persistConfig = {
 };
 
 export function* rootSaga() {
-  yield all([formSaga()]);
+  yield all([formSaga(), authSaga()]);
 }
 
 const enhancedReducer = persistReducer(persistConfig, rootReducer);
