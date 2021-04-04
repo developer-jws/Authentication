@@ -8,6 +8,7 @@ function Logout({ history }) {
   useEffect(() => {
     dispatch(logout());
     history.push("/");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return <></>;

@@ -1,12 +1,11 @@
-import { call, put, takeEvery, takeLatest } from "@redux-saga/core/effects";
+import { call, put, takeLatest } from "@redux-saga/core/effects";
 import { loginRequest, logoutRequest } from "api/authAPI";
 
 const LOGIN = "LOGIN";
 const LOGIN_SUCCESS = "LOGIN_SUCCESS";
 const LOGIN_ERROR = "LOGIN_ERROR";
 const LOGOUT = "LOGOUT";
-const LOGOUT_SUCCESS = "LOGOUT_SUCCESS";
-const LOGOUT_ERROR = "LOGOUT_ERROR";
+const IS_AUTH = "IS_AUTH";
 
 export const login = (payload) => ({
   type: LOGIN,
@@ -26,6 +25,11 @@ export const logout = () => ({
   type: LOGOUT,
 });
 
+export const isAuth = (payload) => ({
+  type: IS_AUTH,
+  payload,
+});
+
 export function* loginSaga(action) {
   try {
     const { email, password, history } = action.payload;
@@ -41,7 +45,6 @@ export function* loginSaga(action) {
     }
     yield put(loginSuccess(data.userID));
     history.push("/");
-    // timeout => Logout
   } catch (error) {
     return yield put(loginError());
   }
@@ -101,6 +104,11 @@ export default function auth(state = initialState, action) {
       return {
         ...state,
         user: null,
+      };
+    case IS_AUTH:
+      return {
+        ...state,
+        user: action.payload,
       };
     default:
       return state;

@@ -27,3 +27,8 @@ export const logoutRequest = async () => {
   });
   return res.data;
 };
+
+export const authRequest = async () => {
+  const res = await axios.post("/api/auth/auth", { withCredentials: true });
+  return res.data;
+};
