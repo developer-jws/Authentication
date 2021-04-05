@@ -16,6 +16,7 @@ import {
   checkPassword,
   initializeForm,
 } from "redux/modules/form";
+import { login } from "url.js";
 
 function Register({ history }) {
   const { email, password, confirmPassword, exists } = useSelector((state) => ({
@@ -94,9 +95,9 @@ function Register({ history }) {
         />
         <AuthButton onClick={onSubmit}>회원가입</AuthButton>
         <AuthError>
-          {exists.emailMessage || exists.passwordMessage || ""}
+          {exists?.emailMessage || exists?.passwordMessage || ""}
         </AuthError>
-        <CenterAlignedLink to="/auth/login">로그인</CenterAlignedLink>
+        <CenterAlignedLink to={login}>로그인</CenterAlignedLink>
       </AuthContent>
     </AuthWrapper>
   );

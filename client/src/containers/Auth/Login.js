@@ -9,6 +9,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { changeInput, initializeForm } from "redux/modules/form";
 import { login } from "redux/modules/auth";
+import { register } from "url.js";
 
 function Login({ history }) {
   const { email, password } = useSelector((state) => ({
@@ -50,7 +51,7 @@ function Login({ history }) {
           onChange={handleChange}
         />
         <AuthButton onClick={onSubmit}>로그인</AuthButton>
-        <CenterAlignedLink to="/auth/register">회원가입</CenterAlignedLink>
+        <CenterAlignedLink to={register}>회원가입</CenterAlignedLink>
       </AuthContent>
     </AuthWrapper>
   );

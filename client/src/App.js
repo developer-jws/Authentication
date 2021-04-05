@@ -5,6 +5,7 @@ import Header from "containers/base/Header";
 import { Login, Logout, Register } from "containers/Auth";
 import { Home, Menu } from "pages";
 import { NotAuthRoute } from "hoc";
+import { appUrl } from "url.js";
 
 function App() {
   return (
@@ -12,15 +13,15 @@ function App() {
       <ToastContainer />
       <Header />
       <Switch>
-        <Route exact path="/" component={Home} />
+        <Route exact path={appUrl.home} component={Home} />
 
         {/* Auth */}
-        <NotAuthRoute exact path="/login" component={Login} />
-        <NotAuthRoute exact path="/register" component={Register} />
-        <Route exact path="/logout" component={Logout} />
+        <NotAuthRoute exact path={appUrl.login} component={Login} />
+        <NotAuthRoute exact path={appUrl.register} component={Register} />
+        <Route exact path={appUrl.logout} component={Logout} />
 
         {/* Menu */}
-        <Route path="/menu" component={Menu} />
+        <Route path={appUrl.menu} component={Menu} />
 
         {/* Error */}
         <Redirect from="*" to="/" />

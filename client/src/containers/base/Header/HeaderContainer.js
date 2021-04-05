@@ -6,6 +6,7 @@ import Header, {
   Spacer,
 } from "components/Base";
 import { useSelector } from "react-redux";
+import { headerUrl } from "url.js";
 
 function HeaderContainer() {
   const { user } = useSelector((state) => ({
@@ -13,20 +14,20 @@ function HeaderContainer() {
   }));
   return (
     <Header>
-      <HeaderLogo to="/">로고</HeaderLogo>
-      <HeaderMenu to="/menu/public">Public</HeaderMenu>
-      <HeaderMenu to="/menu/private">Private</HeaderMenu>
+      <HeaderLogo to={headerUrl.home}>로고</HeaderLogo>
+      <HeaderMenu to={headerUrl.public}>Public</HeaderMenu>
+      <HeaderMenu to={headerUrl.private}>Private</HeaderMenu>
       <Spacer />
       <HeaderMenuWrapper>
         {!user && (
           <>
-            <HeaderMenu to="/login">로그인</HeaderMenu>
-            <HeaderMenu to="/register">회원가입</HeaderMenu>
+            <HeaderMenu to={headerUrl.login}>로그인</HeaderMenu>
+            <HeaderMenu to={headerUrl.register}>회원가입</HeaderMenu>
           </>
         )}
         {user && (
           <>
-            <HeaderMenu to="/logout">로그아웃</HeaderMenu>
+            <HeaderMenu to={headerUrl.logout}>로그아웃</HeaderMenu>
           </>
         )}
       </HeaderMenuWrapper>
