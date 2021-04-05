@@ -7,6 +7,7 @@ import {
   CenterAlignedLink,
   InputWithLabel,
 } from "components/Auth";
+import { ToastCustom } from "lib/toastify";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -46,19 +47,19 @@ function Register({ history }) {
   const onSubmit = async (e) => {
     try {
       if (!exists.email || !exists.password) {
-        alert("정보를 확인해 주세요.");
+        ToastCustom("정보를 확인해 주세요.", "warn");
         return;
       }
       const data = await registerRequest({ email, password, confirmPassword });
       console.log(data);
       if (data.registerSuccess) {
-        alert("가입이 완료되었습니다.");
+        ToastCustom("가입이 완료되었습니다.");
         history.push("/auth/login");
       } else {
-        alert("오류가 발생했습니다.");
+        ToastCustom("오류가 발생했습니다.", "error");
       }
     } catch (error) {
-      alert("오류가 발생했습니다.");
+      ToastCustom("오류가 발생했습니다.", "error");
     }
   };
 

@@ -1,4 +1,5 @@
 import React from "react";
+import { ToastContainer } from "react-toastify";
 import { Switch, Route, Redirect } from "react-router-dom";
 import Header from "containers/base/Header";
 import { Login, Logout, Register } from "containers/Auth";
@@ -8,6 +9,7 @@ import { NotAuthRoute } from "hoc";
 function App() {
   return (
     <>
+      <ToastContainer />
       <Header />
       <Switch>
         <Route exact path="/" component={Home} />

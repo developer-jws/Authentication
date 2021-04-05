@@ -1,5 +1,6 @@
 import { call, put, takeLatest } from "@redux-saga/core/effects";
 import { loginRequest, logoutRequest } from "api/authAPI";
+import { ToastCustom } from "lib/toastify";
 
 const LOGIN = "LOGIN";
 const LOGIN_SUCCESS = "LOGIN_SUCCESS";
@@ -40,7 +41,8 @@ export function* loginSaga(action) {
     const data = yield call(loginRequest, { email, password });
 
     if (!data.loginSuccess) {
-      alert(data.message || "오류가 발생했습니다.");
+      if (data.message) ToastCustom(data.message, "warn");
+      else ToastCustom("오류가 발생했습니다.", "error");
       return yield put(loginError());
     }
     yield put(loginSuccess(data.userID));
