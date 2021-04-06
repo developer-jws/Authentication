@@ -13,7 +13,8 @@ dotenv.config();
 const app = express();
 app.use(morgan("dev"));
 app.use(express.json({ type: "*/*" }));
-app.use(cookie());
+app.use(cookie(process.env.COOKIE_KEY));
+// app.use(cookie());
 
 //
 /*

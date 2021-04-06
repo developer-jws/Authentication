@@ -95,7 +95,9 @@ exports.login = (req, res) => {
             return res
               .cookie("x_auth", user.token, {
                 maxAge: 1000 * 60,
+                secure: true,
                 httpOnly: true,
+                signed: true,
               })
               .status(200)
               .json({ loginSuccess: true, userID: user._id });
@@ -117,7 +119,8 @@ exports.logout = (req, res) => {
   Middleware JWT Verify
 */
 exports.jwtVerifyMiddleware = (req, res, next) => {
-  let token = req.cookies.x_auth;
+  // let token = req.cookies.x_auth;
+  let token = req.signedCookies.x_auth;
 
   jwt.verify(token, process.env.TOKEN_KEY, (error, decoded) => {
     if (error) return res.json({ isAuth: false, error });
