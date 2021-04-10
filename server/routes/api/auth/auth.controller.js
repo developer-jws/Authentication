@@ -1,5 +1,3 @@
-const jwt = require("jsonwebtoken");
-const bcrypt = require("bcryptjs");
 const User = require("../../../models/user");
 
 /*
@@ -20,9 +18,16 @@ exports.exists = async (req, res) => {
   POST /api/auth/register
 */
 exports.register = async (req, res) => {
-  let { email, password, confirmPassword } = req.body;
+  let { email, password, username, confirmPassword } = req.body;
 
-  if (email === "" || email === null || password === "" || password === null)
+  if (
+    email === "" ||
+    email === null ||
+    password === "" ||
+    password === null ||
+    username === "" ||
+    username === null
+  )
     return res.json({ registerSuccess: false });
 
   if (password !== confirmPassword)
@@ -38,26 +43,13 @@ exports.register = async (req, res) => {
       message: "이미 가입된 이메일입니다.",
     });
 
-  bcrypt.genSalt(10, (error, salt) => {
+  const user = new User(req.body);
+
+  user.save((error, doc) => {
     if (error) return res.json({ registerSuccess: false, error });
-
-    bcrypt.hash(password, salt, async (error, hash) => {
-      if (error) return res.json({ registerSuccess: false, error });
-
-      password = hash;
-
-      const user = new User({
-        email,
-        password,
-      });
-
-      user.save((error) => {
-        if (error) return res.json({ registerSuccess: false, error });
-
-        res
-          .status(201)
-          .json({ registerSuccess: true, message: "가입이 완료되었습니다." });
-      });
+    return res.status(200).json({
+      registerSuccess: true,
+      message: "가입이 완료되었습니다.",
     });
   });
 };
@@ -76,35 +68,34 @@ exports.login = (req, res) => {
         message: "해당하는 이메일이 없습니다.",
       });
 
-    if (user) {
-      user.comparePassword(password, (error, match) => {
-        if (error) return res.json({ loginSuccess: false, error });
-        if (!match)
-          return res.json({
-            loginSuccess: false,
-            message: "비밀번호가 틀렸습니다.",
-          });
-        else {
-          const token = jwt.sign({ userID: user._id }, process.env.TOKEN_KEY, {
-            expiresIn: "1m",
-          });
+    user.comparePassword(password, (error, isMatch) => {
+      if (error) return res.json({ loginSuccess: false, error });
+      if (!isMatch)
+        return res.json({
+          loginSuccess: false,
+          message: "비밀번호가 틀렸습니다.",
+        });
 
-          user.token = token;
-          user.save((error, user) => {
-            if (error) return res.json({ loginSuccess: false, error });
-            return res
-              .cookie("x_auth", user.token, {
-                maxAge: 1000 * 60,
-                secure: true,
-                httpOnly: true,
-                signed: true,
-              })
-              .status(200)
-              .json({ loginSuccess: true, userID: user._id });
-          });
-        }
+      console.log();
+      user.generateToken((error, user) => {
+        if (error) return res.json({ loginSuccess: false });
+        res.cookie("x_auth", user.token, {
+          maxAge: 1000 * 60 * 60, // moment
+          secure: true,
+          httpOnly: true,
+          signed: true,
+        });
+        res
+          .cookie("x_authExp", user.tokenExp, {
+            maxAge: 1000 * 60 * 60,
+            secure: true,
+            httpOnly: true,
+            signed: true,
+          })
+          .status(200)
+          .json({ loginSuccess: true, userId: user._id });
       });
-    }
+    });
   });
 };
 
@@ -112,7 +103,20 @@ exports.login = (req, res) => {
   POST api/auth/logout
 */
 exports.logout = (req, res) => {
-  return res.clearCookie("x_auth").json({ logoutSuccess: true });
+  User.findOneAndUpdate(
+    { _id: req.user._id },
+    { token: "", tokenExp: "" },
+    (err, doc) => {
+      if (err) return res.json({ logoutSuccess: false });
+      return res
+        .clearCookie("x_auth")
+        .clearCookie("x_authExp")
+        .status(200)
+        .json({
+          logoutSuccess: true,
+        });
+    }
+  );
 };
 
 /*
@@ -122,19 +126,12 @@ exports.jwtVerifyMiddleware = (req, res, next) => {
   // let token = req.cookies.x_auth;
   let token = req.signedCookies.x_auth;
 
-  jwt.verify(token, process.env.TOKEN_KEY, (error, decoded) => {
+  User.findByToken(token, (error, user) => {
     if (error) return res.json({ isAuth: false, error });
-
-    User.findOne({ _id: decoded.userID }, (error, user) => {
-      if (error) return res.json({ isAuth: false, error });
-      if (!user) return res.json({ isAuth: false });
-
-      if (user) {
-        req.token = token;
-        req.user = user;
-      }
-      next();
-    });
+    if (!user) return res.json({ isAuth: false, error: true });
+    req.token = token;
+    req.user = user;
+    next();
   });
 };
 

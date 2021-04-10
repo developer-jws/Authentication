@@ -45,7 +45,7 @@ export function* loginSaga(action) {
       else ToastCustom("오류가 발생했습니다.", "error");
       return yield put(loginError());
     }
-    yield put(loginSuccess(data.userID));
+    yield put(loginSuccess(data.userId));
     history.push("/");
   } catch (error) {
     return yield put(loginError());
